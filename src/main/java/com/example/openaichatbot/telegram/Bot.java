@@ -27,7 +27,7 @@ public class Bot extends TelegramLongPollingBot {
     public static ImagesHandlerState imagesHandlerState;
     public static Map<String, String> context = new HashMap<>();
 
-    @Value("${telegram.bot.username}")
+    @Value("${bot_username}")
     private String username;
 
     @Value("${bot_token}")
@@ -64,7 +64,7 @@ public class Bot extends TelegramLongPollingBot {
                 sendMessage = commonMessageHandler.greeting(message);
                 execute(sendMessage);
                 break;
-            case "/generate":
+            case "Згенерувати зображення":
                 sendMessage = imagesMessageHandler.askPromptFromUser(message);
                 execute(sendMessage);
                 imagesHandlerState = ImagesHandlerState.PROMPT_ASKED;

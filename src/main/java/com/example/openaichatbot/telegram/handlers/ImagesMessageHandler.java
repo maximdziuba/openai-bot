@@ -1,6 +1,7 @@
 package com.example.openaichatbot.telegram.handlers;
 
 import com.example.openaichatbot.service.openai.OpenAi;
+import com.example.openaichatbot.telegram.keyboards.Keyboards;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,12 +26,14 @@ public class ImagesMessageHandler {
 
     public SendPhoto sendImage(Message message) {
         var prompt = message.getText();
-        var caption = "Ось результат до запиту \"" + prompt + "\"";
-        var photoLink = openAi.generateImage2(prompt, 0.5f, 1024, null, 0, true, 1);
+        var caption = "Ось результат до запиту \"" + prompt + "\". Можеш спробувати ще щось";
+        var photoLink = openAi.generateImage(prompt, 0.5f, 1024, null, 0, true, 1);
+        var keyboard = Keyboards.createReplyMarkupKeyboard("Згенерувати зображення");
         var sendPhoto = SendPhoto.builder()
                 .chatId(String.valueOf(message.getChatId()))
                 .photo(new InputFile(photoLink))
                 .caption(caption)
+                .replyMarkup(keyboard)
                 .build();
         return sendPhoto;
     }

@@ -24,5 +24,4 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.telegram:telegrambots-spring-boot-starter:5.7.1'
     implementation 'com.mashape.unirest:unirest-java:1.4.9'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
 }

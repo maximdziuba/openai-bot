@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -56,7 +58,7 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private void handleIncomingMessage(Message message) throws TelegramApiException {
+    private void handleIncomingMessage(Message message) throws TelegramApiException, FileNotFoundException {
         var messageText = message.getText();
         var sendMessage = new SendMessage();
         switch (messageText) {
@@ -71,9 +73,14 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             default:
                 if (message.hasText() && Objects.equals(imagesHandlerState, ImagesHandlerState.PROMPT_ASKED)) {
-                    var sendPhoto = imagesMessageHandler.sendImage(message);
-                    execute(sendPhoto);
-                    imagesHandlerState = ImagesHandlerState.GOT_PROMPT_AND_ASKED_NUMBER;
+                    sendMessage = imagesMessageHandler.getPromptAndAskNumberOfImages(message);
+                    execute(sendMessage);
+                    imagesHandlerState = ImagesHandlerState.GOT_PROMPT_AND_NUMBER;
+                    break;
+                } else if (message.hasText() && Objects.equals(imagesHandlerState, ImagesHandlerState.GOT_PROMPT_AND_NUMBER)) {
+                    SendMediaGroup sendMediaGroup = imagesMessageHandler.sendMediaGroup(message);
+                    execute(sendMediaGroup);
+                    imagesHandlerState = ImagesHandlerState.GOT_PROMPT_AND_NUMBER;
                 }
         }
     }
